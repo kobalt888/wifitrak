@@ -1,0 +1,54 @@
+{
+	"config": {
+		"ssid": "REPLACE",
+		"password": "REPLACE"
+	},
+	"include": [
+		"$(MODDABLE)/examples/manifest_base.json",
+		"$(MODDABLE)/examples/manifest_piu.json",
+        "$(MODDABLE)/modules/network/wifi/manifest.json"
+	],
+	"modules": {
+		"*": [
+			"./main",
+            "./locations",
+            "./list-screen",
+            "./confirm-screen",
+            "./scroller-behavior",
+			"$(MODULES)/network/http/*"
+		],
+        "~": [
+			"$(PIU)/MC/piuCombTransition",
+			"$(PIU)/MC/piuWipeTransition",
+			"$(BUILD)/devices/esp/setup/network"
+		]
+	},
+    "resources":{
+        "*": [
+            "./button"
+        ],
+        "*-alpha": [
+			"$(MODDABLE)/examples/assets/fonts/OpenSans-Semibold-16",
+			"$(MODDABLE)/examples/assets/fonts/OpenSans-Semibold-18",
+			"$(MODDABLE)/examples/assets/fonts/OpenSans-Regular-20"
+		]
+	},
+    "platforms": {
+		"mac": {
+			"modules": {
+				"~": [
+					"$(MODULES)/network/wifi/*"
+				],
+				"wifi": "./simulator/wifisim"
+			}
+		},
+        "esp32/moddable_two": {
+			"creation":{
+				"static": 50000
+			},
+			"config": {
+				"rotation": 0
+			}
+		}
+    }    
+}
