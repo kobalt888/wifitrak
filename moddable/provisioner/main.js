@@ -2,7 +2,8 @@ import {} from "piu/MC";
 import config from "mc/config";
 import LOCATIONS from "locations";
 import {ListScreen} from "list-screen";
-import {ConfirmScreen, WiFiStatusSpinner} from "confirm-screen";
+import {ConfirmScreen} from "confirm-screen";
+import {WiFiStatusSpinner} from "utils"
 
 if (config.ssid === "REPLACE")
 	throw new Error("Wi-Fi SSID required");

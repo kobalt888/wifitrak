@@ -11,6 +11,7 @@
 	"modules": {
 		"*": [
 			"./main",
+            "./utils",
             "./locations",
             "./list-screen",
             "./confirm-screen",
