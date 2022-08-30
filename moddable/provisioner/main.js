@@ -4,11 +4,14 @@ import LOCATIONS from "locations";
 import {ListScreen} from "list-screen";
 import {ConfirmScreen} from "confirm-screen";
 import {WiFiStatusSpinner} from "utils"
+import {Request} from "http"
+
 
 if (config.ssid === "REPLACE")
 	throw new Error("Wi-Fi SSID required");
 
 import WiFi from "wifi";
+
 WiFi.mode = 1;
 
 let locationData = LOCATIONS.split(".").map((item, index) => ({ locationName:item.trim(), variant:(index % 10) - 5 }));	
@@ -16,8 +19,9 @@ let locationData = LOCATIONS.split(".").map((item, index) => ({ locationName:ite
 class ProvisionerAppBehavior extends Behavior {
 	onCreate(application) {
 		global.application = application;
+		this.networks = []
 		this.doNext(application, "DISPLAY_LIST", locationData);
-		application.interval = 2000;
+		application.interval = 500;
 		application.start();
 	}
 	doNext(application, nextScreenName, nextScreenData = {}) {
@@ -37,16 +41,49 @@ class ProvisionerAppBehavior extends Behavior {
 			case "CONFIRM_ADD":
 				application.add(new ConfirmScreen(nextScreenData));
 				break;
+			case "PUSH_DATA":
+				let sanitizedNetworks = {}
+				this.networks.map(network => {
+					sanitizedNetworks[network.ssid] = network.rssi
+				})
+
+				sanitizedNetworks = {
+					"name": nextScreenData,
+					"networks": {
+						"payload": sanitizedNetworks
+					}
+				}
+
+				let request = new Request({	
+					host: "wifitrak.ngrok.io",
+					path: "/api/v1/location/add",
+					method: "POST",
+					body: JSON.stringify(sanitizedNetworks),
+					response: String
+				});
+
+				request.callback = function(message, value)
+				{
+					trace(value)
+					trace(message)
+					if (Request.responseComplete === message) {
+						trace(`name: ${value}\n`);
+						trace(`message: ${message}\n`);
+					}
+				}
+
+				application.add(new ListScreen(locationData));
+				break;
 		}
 	}
 	scan(application, locationIndex) {
-		let networks = [];
+		this.networks = [];
 		WiFi.scan({hidden: true}, item => {
 			if (item) {
-				networks.push({ ssid: item.ssid, rssi: item.rssi });
+				this.networks.push({ ssid: item.ssid, rssi: item.rssi });
 			} else {
-				networks.sort(compareStrengths)
-				application.delegate("doNext", "CONFIRM_ADD", { locationIndex, networks: networks.slice(0,5) });
+				this.networks.sort(compareStrengths)
+				application.delegate("doNext", "CONFIRM_ADD", { locationIndex, networks: this.networks.slice(0,7) });
 			}
 		});
 	}

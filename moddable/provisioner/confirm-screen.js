@@ -8,8 +8,11 @@ const textStyle = Style.template({ font: "20px Open Sans", vertical: "middle", h
 const accesspointStyle = Style.template({ font: "semibold 16px Open Sans", vertical: "middle", horizontal: "left", color: "#FFFFFF" });
 
 class ConfirmBehavior extends Behavior {
+	onCreate(content, data) {
+		this.locationName = data.locationIndex.locationName
+	}
 	onTouchBegan(port, id, x, y) {
-		application.delegate("doNext", "DISPLAY_LIST", {});
+		application.delegate("doNext", "PUSH_DATA", this.locationName);
 		port.time = 0;
 		port.start();
 	}
@@ -23,7 +26,6 @@ class CancelBehavior extends Behavior {
 	}
 };
 
-let spacingCount = 0;
 export const ConfirmScreen = Container.template(($ => ({
 	left:0, right:0, top:0, bottom:0, Skin:Skin.template({ fill: "#000000" }), style:buttonStyle,
 	contents: [
@@ -34,10 +36,9 @@ export const ConfirmScreen = Container.template(($ => ({
 					top: 20, height: 32, left: 0, right: 0, Style: textStyle,
 					string: `Add data point for ${$.locationIndex.locationName}?`
 				}),
-				$.networks.map(network => {
-					spacingCount += 25;
+				$.networks.map((network, index) => {
 					return Text(network, {
-						top: 70 + spacingCount, height: 32, left: 0, right: 0, Style: accesspointStyle,
+						top: 70 + index * 25, height: 32, left: 0, right: 0, Style: accesspointStyle,
 						string: `${network.ssid} @ ${network.rssi}db`
 					});
 				}),
@@ -46,4 +47,4 @@ export const ConfirmScreen = Container.template(($ => ({
 			]
 		})
 	]
-}));
+})));

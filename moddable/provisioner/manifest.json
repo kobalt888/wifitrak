@@ -1,24 +1,28 @@
 {
 	"config": {
-		"ssid": "REPLACE",
-		"password": "REPLACE"
+		"ssid": "AMG",
+		"password": "3605503812"
 	},
 	"include": [
 		"$(MODDABLE)/examples/manifest_base.json",
 		"$(MODDABLE)/examples/manifest_piu.json",
-        "$(MODDABLE)/modules/network/wifi/manifest.json"
+		"$(MODDABLE)/examples/manifest_net.json",
+    "$(MODDABLE)/modules/network/wifi/manifest.json"
+	],
+	"preload": [
+		"http"
 	],
 	"modules": {
 		"*": [
 			"./main",
-            "./utils",
-            "./locations",
-            "./list-screen",
-            "./confirm-screen",
-            "./scroller-behavior",
+			"./utils",
+			"./locations",
+			"./list-screen",
+			"./confirm-screen",
+			"./scroller-behavior",
 			"$(MODULES)/network/http/*"
 		],
-        "~": [
+  "~": [
 			"$(PIU)/MC/piuCombTransition",
 			"$(PIU)/MC/piuWipeTransition",
 			"$(BUILD)/devices/esp/setup/network"
