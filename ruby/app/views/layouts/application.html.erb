@@ -3,6 +3,7 @@
   <head>
     <title>Wifitrak</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -11,6 +12,16 @@
   </head>
 
   <body>
+    <section class="hero">
+      <div class="hero-body">
+        <p class="title">
+          Wifitrak
+        </p>
+        <p class="subtitle">
+          Tracks... things
+        </p>
+      </div>
+    </section>
     <%= yield %>
   </body>
 </html>

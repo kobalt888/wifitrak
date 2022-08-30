@@ -1,4 +1,4 @@
-class LocationSerializer < ActiveModel::LocationSerializer
+class LocationSerializer < ActiveModel::Serializer
 
   attributes :name, :networks, :entries
 

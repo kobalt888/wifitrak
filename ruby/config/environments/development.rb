@@ -16,6 +16,7 @@ Rails.application.configure do
 
   # Enable server timing
   config.server_timing = true
+  config.hosts << ".ngrok.io"
 
   config.assets.check_precompiled_asset = false
 

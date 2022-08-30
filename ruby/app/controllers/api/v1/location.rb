@@ -4,7 +4,6 @@ module API
       format :json
 
       include API::V1::Defaults
-      include LocationHelper
 
       helpers do 
         def query_for_closest_network(a, b, c, tolerance_factor)
@@ -71,7 +70,8 @@ module API
           # Gonna be gnarly...
 
           # The amount of networks will inform our strategy, but for this MVP being used in my apartment, I might assume
-          # there to be at least three networks for any query.
+          # there to be at least three networks for any query. Ideally I spend alot more time on this algorithm, but it will
+          # do for this.
           amount_of_networks = params[:networks][:payload].length
 
           found_location = nil
@@ -94,7 +94,12 @@ module API
               iterator += 1
             end
 
-            puts found_location.name
+            ::Device
+              .find(params[:deviceid])
+              .update({
+                location: found_location ? found_location.name : 'Unknown!'
+              })
+
           end 
         end
       end
