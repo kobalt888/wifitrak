@@ -6,11 +6,13 @@ module API
       include API::V1::Defaults
 
       helpers do 
-        def query_for_closest_network(a, b, c, tolerance_factor)
+        def query_for_closest_network(a, b, c, d, e, tolerance_factor)
           return ::Location
             .where("json_extract(locations.networks, '$.#{a[0]}') BETWEEN #{a[1]-1*tolerance_factor} AND #{a[1]+1*tolerance_factor}")
-            .where("json_extract(locations.networks, '$.#{b[0]}') BETWEEN #{b[1]-1*tolerance_factor} AND #{b[1]+1.5*tolerance_factor}")
-            .where("json_extract(locations.networks, '$.#{c[0]}') BETWEEN #{c[1]-3*tolerance_factor} AND #{c[1]+3*tolerance_factor}")
+            .where("json_extract(locations.networks, '$.#{b[0]}') BETWEEN #{b[1]-1*tolerance_factor} AND #{b[1]+1*tolerance_factor}")
+            .where("json_extract(locations.networks, '$.#{c[0]}') BETWEEN #{c[1]-1*tolerance_factor} AND #{c[1]+1*tolerance_factor}")
+            .where("json_extract(locations.networks, '$.#{d[0]}') BETWEEN #{d[1]-1*tolerance_factor} AND #{d[1]+1*tolerance_factor}")
+            .where("json_extract(locations.networks, '$.#{e[0]}') BETWEEN #{e[1]-1*tolerance_factor} AND #{e[1]+1*tolerance_factor}")
             .first
         end
       end
@@ -42,7 +44,7 @@ module API
 
             # For all the networks that we have both current database data on and data in this request, weight the old data down
             # and then sprinkle in the new data to properly tweak it
-            matching_networks.map { |network| existing_entry[:networks][network] = ((existing_entry.networks[network].to_f * weight_factor + params[:networks][:payload][network].to_f).to_f) / (weight_factor+1)}
+            matching_networks.map { |network| existing_entry[:networks][network] = (((existing_entry.networks[network].to_f * weight_factor + params[:networks][:payload][network].to_f).to_f) / (weight_factor+1)).round(2)}
 
             # I am a ruby Simpleton and I am also in a rush
             missing_networks.map { |missing_network| existing_entry[:networks][missing_network] = params[:networks][:payload][missing_network] }
@@ -80,8 +82,10 @@ module API
             first_network = params[:networks].to_a[0][1].to_a[0] # nasty...
             second_network = params[:networks].to_a[0][1].to_a[1]
             third_network = params[:networks].to_a[0][1].to_a[2]
+            fourth_network = params[:networks].to_a[0][1].to_a[3] # nasty...
+            fifth_network = params[:networks].to_a[0][1].to_a[4]
 
-            tolerance_factors = [ 0.8, 1.6, 3.2, 6.4 ]
+            tolerance_factors = [ 5, 7, 9, 10 ]
 
             iterator = 0
             until found_location || iterator >= tolerance_factors.length do
@@ -89,6 +93,8 @@ module API
                 first_network,
                 second_network,
                 third_network,
+                fourth_network,
+                fifth_network,
                 tolerance_factors[iterator]
               )
               iterator += 1
@@ -97,7 +103,7 @@ module API
             ::Device
               .find(params[:deviceid])
               .update({
-                location: found_location ? found_location.name : 'Unknown!'
+                location: found_location ? found_location.name : 'Arg...'
               })
 
           end 

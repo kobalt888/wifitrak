@@ -1,4 +1,5 @@
-<div id=device_<%=device.id%>> 
+<div id=device_<%= device.id %>> 
+<%= turbo_stream_from "devices" %>
   <div class="card">
     <header class="card-header">
       <p class="card-header-title">
