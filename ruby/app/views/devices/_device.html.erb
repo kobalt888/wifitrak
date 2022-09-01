@@ -1,5 +1,7 @@
-<div id=device_<%= device.id %>> 
-<%= turbo_stream_from "devices" %>
+ <%= tag.div id: dom_id(device), data: {
+        stream_enter_class: "animate-device-in",
+        stream_exit_class: "animate-device-out"
+  } do %>
   <div class="card">
     <header class="card-header">
       <p class="card-header-title">
@@ -14,13 +16,12 @@
     <div class="card-content">
       <div class="content">
         <div class="block">
-          Location: <strong><%= device.location %></strong>
+          Last Known Location: <strong><%= device.location %></strong>
         </div>
         <div class="block">
-          Last Updated: <time><%= device.updated_at %></time>
+          Updated: <time><%= device.updated_at %></time> 
         </div>
-        
       </div>
     </div>
   </div>
-</div>
+<% end %>
