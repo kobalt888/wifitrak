@@ -25,7 +25,7 @@ This device is a microcontroller with a touchscreen attached to it. This hardwar
 ![Alt Text](https://media.giphy.com/media/eg5XXlMJ7c3885iFMk/giphy-downsized-large.gif)
 
 ### The Tracker
-This device simply does a set of WiFi scans and uploads a payload with all of the networks found. In my development, I found the attentuation of the wifi signals results in a wide range of possible values for any given network, even with the tracker in the same exact location. So a set of 20 or so scans are done, are average out, and then sent up. I have found that this, with some server side tweaking to my propietary algorithm have produced accurate and consistent results. Pictured below is the _Kitchen Test Node_ which I used to help calibrate my algorithm.
+This device simply does a set of WiFi scans and uploads a payload with all of the networks found. In my development, I found the attentuation of the wifi signals results in a wide range of possible values for any given network, even with the tracker in the same exact location. So a set of 20 or so scans are done, are averaged out, and then sent up. I have found that this along with some server side tweaking to my propietary algorithm have produced accurate and consistent results. Pictured below is the _Kitchen Test Node_ which I used to help calibrate my algorithm.
 
 ![Alt Text](https://i.ibb.co/j4mTzDN/IMG-2517.jpg)
 
