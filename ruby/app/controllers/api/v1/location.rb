@@ -41,7 +41,7 @@ module API
           # Lets find out if there is an entry for this location before adding it
           existing_entry = ::Location.where(name: permitted_params[:name]).first
           if existing_entry
-            weight_factor = existing_entry.entries # When updating the strength values, we want locations with 
+            weight_factor = existing_entry.entries 
             # Are there networks in this request that we currently do not have data on?
             missing_networks = params[:networks][:payload].keys - existing_entry.networks.keys
 
