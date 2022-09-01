@@ -24,12 +24,12 @@ This device is a microcontroller with a touchscreen attached to it. This hardwar
 ![Alt Text](https://media.giphy.com/media/eg5XXlMJ7c3885iFMk/giphy-downsized-large.gif)
 
 ### The Tracker
-This device simply does a set of WiFi scans and uploads a payload with all of the networks found. In my development, I found the attentuation of the wifi signals results in a wide range of possible values for any given network, even with the tracker in the same exact location. So a set of 20 or so scans are done, are average out, and then sent up. I have found that this, with some server side tweaking to my propietary algorithm have produced accurate and consistent results.
+This device simply does a set of WiFi scans and uploads a payload with all of the networks found. In my development, I found the attentuation of the wifi signals results in a wide range of possible values for any given network, even with the tracker in the same exact location. So a set of 20 or so scans are done, are average out, and then sent up. I have found that this, with some server side tweaking to my propietary algorithm have produced accurate and consistent results. Pictured below is the _Kitchen Test Node_ which I used to help calibrate my algorithm.
 
 ![Alt Text](https://i.ibb.co/j4mTzDN/IMG-2517.jpg)
 
 ### The RoR Webapp
-The webapp is pretty self explanatory. Going to the page will show you web app and any devices I currently have configured, and their latest report positions. Any updates made serverside are automagically rendered through the afforementiioned Turbo Rails integration.
+The webapp is pretty self explanatory. Visiting the page will show you any devices I currently have configured, and their latest report positions. Any updates made serverside are automagically rendered through the afforementiioned Turbo Rails integration.
 
 ## Retrospective
 I can say through this that while at first, Ruby was some form of alien hieroglyphics, I could see myself designing this product into product with the RoR platform. The ActiveRecord model system impressed me greatly, and the syntax/auto generation for using the model in views. In addition, the Rails 7 platform with ActionCable/Turbo allowing for easy integration of webhooks to the afforementioned models was too good to be true. I did not have time to create a formal SPA application, and honestly for this I am glad this was the case. Had I tried to digest React or Vue on my first go with RoR, I assuredly would have not been able to bridge the grape with Turbo websocket integration.
