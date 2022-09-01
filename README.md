@@ -26,6 +26,8 @@ This device is a microcontroller with a touchscreen attached to it. This hardwar
 ### The Tracker
 This device simply does a set of WiFi scans and uploads a payload with all of the networks found. In my development, I found the attentuation of the wifi signals results in a wide range of possible values for any given network, even with the tracker in the same exact location. So a set of 20 or so scans are done, are average out, and then sent up. I have found that this, with some server side tweaking to my propietary algorithm have produced accurate and consistent results.
 
+![Alt Text](https://ibb.co/kcjxJX7)
+
 ### The RoR Webapp
 The webapp is pretty self explanatory. Going to the page will show you web app and any devices I currently have configured, and their latest report positions. Any updates made serverside are automagically rendered through the afforementiioned Turbo Rails integration.
 
