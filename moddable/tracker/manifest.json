@@ -1,0 +1,29 @@
+{
+	"config": {
+		"ssid": "AMG",
+		"password": "3605503812",
+		"device_id": "REPLACE"
+	},
+	"include": [
+		"$(MODDABLE)/examples/manifest_base.json",
+    "$(MODDABLE)/modules/network/wifi/manifest.json",
+		"$(MODDABLE)/examples/manifest_net.json"
+	],
+	"creation": {
+		"keys": {
+			"available": 64
+		}
+	},
+	"preload": [
+		"http"
+	],
+	"modules": {
+		"*": [
+			"./main",
+			"$(MODULES)/network/http/*"
+		],
+		"~": [
+			"$(BUILD)/devices/esp/setup/network"
+		]
+	}
+}
