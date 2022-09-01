@@ -21,6 +21,7 @@ In this repo you will find the code for the RoR application, and code for the mi
 
 ### The Provisioner
 This device is a microcontroller with a touchscreen attached to it. This hardware is sold by the creators of the Moddable SDK, the [Moddable Two]. The purpose of this device when paired with the firmware I created is to provide an easy to use, handheld battery powered interface that can collect data on WiFi signals. Using a set of locations that I defined based on my apartment, it is as simple as walking to the location where you would like to add data for, tapping the location, and verifying the data before submission. The device submits a payload of networks with strength ratings to the RoR server for further processing.
+
 ![Alt Text](https://media.giphy.com/media/eg5XXlMJ7c3885iFMk/giphy-downsized-large.gif)
 
 ### The Tracker
