@@ -1,7 +1,8 @@
 {
 	"config": {
 		"ssid": "AMG",
-		"password": "3605503812"
+		"password": "3605503812",
+		"device_id": "REPLACE"
 	},
 	"include": [
 		"$(MODDABLE)/examples/manifest_base.json",
