@@ -6,14 +6,20 @@ module API
       include API::V1::Defaults
 
       helpers do 
-        def query_for_closest_network(a, b, c, d, e, tolerance_factor)
-          return ::Location
-            .where("json_extract(locations.networks, '$.#{a[0]}') BETWEEN #{a[1]-1*tolerance_factor} AND #{a[1]+1*tolerance_factor}")
-            .where("json_extract(locations.networks, '$.#{b[0]}') BETWEEN #{b[1]-1*tolerance_factor} AND #{b[1]+1*tolerance_factor}")
-            .where("json_extract(locations.networks, '$.#{c[0]}') BETWEEN #{c[1]-1*tolerance_factor} AND #{c[1]+1*tolerance_factor}")
-            .where("json_extract(locations.networks, '$.#{d[0]}') BETWEEN #{d[1]-1*tolerance_factor} AND #{d[1]+1*tolerance_factor}")
-            .where("json_extract(locations.networks, '$.#{e[0]}') BETWEEN #{e[1]-1*tolerance_factor} AND #{e[1]+1*tolerance_factor}")
-            .first
+        def query_for_closest_network(networks, tolerance_factor)
+          # DEPRECATED, but keeping it here because I have enough pride
+
+          query_obj = ::Location.all
+          # https://medium.com/@ehrndog/dynamic-activerecord-querying-in-rails-4-by-example-730c5793c74
+          # As of Rails 4, this ugliness is the standard. Minus a little SQL injection susceptibility I got goin on if 
+          # there was ever a bobby tables WiFi network...
+          networks.map { |network| 
+            query_obj = query_obj.where("json_extract(locations.networks, '$.#{network[0]}') BETWEEN #{network[1]-1*tolerance_factor} AND #{network[1]+1*tolerance_factor}")
+          }
+
+          puts query_obj
+
+          return query_obj.first
         end
       end
 
@@ -69,44 +75,125 @@ module API
           requires :deviceid, type: Integer, desc: "The id of the device reporting the data."
         end
         post "/submitdata" do
+
+          # DEPRECATED BLOCK, but keeping it here because I have enough pride
           # Gonna be gnarly...
 
-          # The amount of networks will inform our strategy, but for this MVP being used in my apartment, I might assume
-          # there to be at least three networks for any query. Ideally I spend alot more time on this algorithm, but it will
-          # do for this.
-          amount_of_networks = params[:networks][:payload].length
+          # # The amount of networks will inform our strategy, but for this MVP being used in my apartment, I might assume
+          # # there to be at least fifteen networks for any query. Ideally I spend alot more time on this algorithm, but it will
+          # # do for this.
+          # amount_of_networks = params[:networks][:payload].length
 
-          found_location = nil
+          # found_location = nil
+          # search_networks = []
 
-          if amount_of_networks >= 3
-            first_network = params[:networks].to_a[0][1].to_a[0] # nasty...
-            second_network = params[:networks].to_a[0][1].to_a[1]
-            third_network = params[:networks].to_a[0][1].to_a[2]
-            fourth_network = params[:networks].to_a[0][1].to_a[3] # nasty...
-            fifth_network = params[:networks].to_a[0][1].to_a[4]
+          # # Tried to make this readable...
+          # params[:networks][:payload]
+          #   .sort_by(&:last)
+          #   .reverse
+          #   .slice(0,8)
+          #   .map { |network|
+          #     if network[0] != "" # Latest firmware code checks for this, but too lazy to pull them off the wall and reprogram.
+          #       search_networks.push(network)
+          #     end
+          # }
 
-            tolerance_factors = [ 5, 7, 9, 10 ]
+          # tolerance_factors = (1..10).step(1).to_a 
 
-            iterator = 0
-            until found_location || iterator >= tolerance_factors.length do
-              found_location = query_for_closest_network(
-                first_network,
-                second_network,
-                third_network,
-                fourth_network,
-                fifth_network,
-                tolerance_factors[iterator]
-              )
-              iterator += 1
-            end
+          # iterator = 0 # oof
 
-            ::Device
-              .find(params[:deviceid])
-              .update({
-                location: found_location ? found_location.name : 'Arg...'
-              })
+          # until found_location || iterator >= tolerance_factors.length do
+          #   found_location = query_for_closest_network(
+          #     search_networks,
+          #     tolerance_factors[iterator]
+          #   )
+          #   iterator += 1
+          # end
 
-          end 
+
+
+
+          # Ignoring the terrible first round algorithm, I devised a revision below that I am much happier with, and would even 
+          # keep as is going forward. Also less likely to induce vomiting
+
+          scores = {}
+
+          # Lets get the networks that were just sent in by a device, sort them by strongest, and reverse it because it works 😅
+          payloadNetworks = params[:networks][:payload].sort_by(&:last).reverse
+
+          # Gather the known locations in the database
+          knownLocations = ::Location.all
+
+          # Find out what device we are working with
+          targetDevice = ::Device
+            .find(params[:deviceid])
+
+          puts "Starting score check for #{targetDevice.name}"
+
+          # Taking the list of locations, lets iterate
+          knownLocations.map { |location|
+            penaltyCounter = 0
+            biggestGap = {'name': '', 'score': 0}
+            # We will calculate a score for each location
+            score = 0
+            # To do this, we will loop over all the networks the device just sent in (Network name, strength)
+            payloadNetworks.map { |network| 
+              # If this current network that was sent in exists in the database, find out the difference in the strength reads
+              # and add the difference to the score
+              if location.networks[network[0]]
+                roundScore = ((network[1]).abs() - (location.networks[network[0]]).abs()).abs()
+
+                # In order to fine tune the algorithm, I had to take advantage of the exponential change in wifi strength rating
+                # that occurs with a linear change in physical distance. So as the strength of the signal gets weaker (lower negative
+                # value), the difference in the strength is weighed even more, as these values should not deviate as much at the stronger
+                # signals.   ////
+                #           ////
+                #          ////the more you know
+
+                if network[1] < -60
+                  roundScore = roundScore * 1.25
+                end
+                if network[1] < -75
+                  roundScore = roundScore *1.25
+                end
+                if network[1] < -85
+                  roundScore = roundScore *1.25
+                end
+
+                if roundScore > biggestGap[1].to_i
+                  biggestGap[:score] = roundScore
+                  biggestGap[:name] = network[0]
+                end
+                score += ((network[1]).abs() - (location.networks[network[0]]).abs()).abs()
+              # If it doesnt exist, thats a demerit.  
+              else
+                penaltyCounter += 1
+                score += 10
+              end
+            }
+            puts "The largest gap for #{location.name} was #{biggestGap[:name]} @ #{biggestGap[:score]}"
+            puts "#{location.name} hit the penalty #{penaltyCounter} times."
+            puts "-"
+            scores[location.name] = score
+          }
+
+          puts scores
+
+          # Do some iteration magic to find the key pair with the lowest score (winner)
+          # and return the name of the location
+          lowestScoringLocation = [scores.min_by{|k, v| v}][0][0]
+
+          puts "#{lowestScoringLocation} was the lowest scoring location."
+            
+          # feels bad doing this operation like this...  
+          targetDevice
+           .touch()
+
+          # ...but couldnt figure out chaining easily.
+          targetDevice
+            .update({
+              location: lowestScoringLocation
+            })
         end
       end
     end

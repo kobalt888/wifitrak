@@ -1,1 +1,1 @@
-GrapeSwaggerRails.options.app_url  = "http://localhost:3000/api/v1"
+GrapeSwaggerRails.options.app_url  = "https://wifitrak.ngrok.io/api/v1"
