@@ -145,7 +145,7 @@ module API
 
                 # In order to fine tune the algorithm, I had to take advantage of the exponential change in wifi strength rating
                 # that occurs with a linear change in physical distance. So as the strength of the signal gets weaker (lower negative
-                # value), the difference in the strength is weighed even more, as these values should not deviate as much at the stronger
+                # value), the difference in the strength is weighed even more, as these values should not deviate as much as the stronger
                 # signals.   ////
                 #           ////
                 #          ////the more you know
