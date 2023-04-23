@@ -1,8 +1,5 @@
 # Wifi Trak By Alfred Hanson
 
-Visit the WifiTrak Webapp [here]
-###### _If its down, its because its running on a Raspberry Pi in my Living Room_
-
 ## About
 This project seeks to capture the ever growing jungle that is apartment WiFi networks, and turn it into a useful appartus. By aggregating sets of WiFi network strengths, it seems possible to harness a database of these sets for a given locale and accurately locate something within its bounds. This project seeks to investigate this hypothesis, explore its technical feasibility, and perhaps some practical consumer use cases.
 
